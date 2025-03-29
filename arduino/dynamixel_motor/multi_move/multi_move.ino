@@ -26,7 +26,10 @@
   #define DEBUG_SERIAL Serial
 #endif
 
-const uint8_t DXL_ID = 10;
+const uint8_t DXL_ID1 = 1;
+const uint8_t DXL_ID2 = 2;
+const uint8_t DXL_ID3 = 3;
+const uint8_t DXL_ID4 = 4;
 const float DXL_PROTOCOL_VERSION = 2.0;
 
 DynamixelShield dxl;
@@ -45,12 +48,24 @@ void setup() {
   // Set Port Protocol Version. This has to match with DYNAMIXEL protocol version.
   dxl.setPortProtocolVersion(DXL_PROTOCOL_VERSION);
   // Get DYNAMIXEL information
-  dxl.ping(DXL_ID);
+  dxl.ping(DXL_ID1);
+  dxl.ping(DXL_ID2);
+  dxl.ping(DXL_ID3);
+  dxl.ping(DXL_ID4);
 
   // Turn off torque when configuring items in EEPROM area
-  dxl.torqueOff(DXL_ID);
-  dxl.setOperatingMode(DXL_ID, OP_POSITION);
-  dxl.torqueOn(DXL_ID);
+  dxl.torqueOff(DXL_ID1);
+  dxl.torqueOff(DXL_ID2);
+  dxl.torqueOff(DXL_ID3);
+  dxl.torqueOff(DXL_ID4);
+  dxl.setOperatingMode(DXL_ID1, OP_POSITION);
+  dxl.setOperatingMode(DXL_ID2, OP_POSITION);
+  dxl.setOperatingMode(DXL_ID3, OP_POSITION);
+  dxl.setOperatingMode(DXL_ID4, OP_POSITION);
+  dxl.torqueOn(DXL_ID1);
+  dxl.torqueOn(DXL_ID2);
+  dxl.torqueOn(DXL_ID3);
+  dxl.torqueOn(DXL_ID4);
 }
 
 void loop() {
@@ -58,18 +73,30 @@ void loop() {
   
   // Please refer to e-Manual(http://emanual.robotis.com/docs/en/parts/interface/dynamixel_shield/) for available range of value. 
   // Set Goal Position in RAW value
-  dxl.setGoalPosition(DXL_ID, 210, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID1, 210, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID2, 210, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID3, 210, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID4, 210, UNIT_DEGREE);
   delay(1000);
   // Print present position in raw value
   DEBUG_SERIAL.println("Present Position(degree) : ");
-  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID1, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID2, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID3, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID4, UNIT_DEGREE));
   delay(1000);
 
   // Set Goal Position in DEGREE value
-  dxl.setGoalPosition(DXL_ID, 330, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID1, 330, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID2, 330, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID3, 330, UNIT_DEGREE);
+  dxl.setGoalPosition(DXL_ID4, 330, UNIT_DEGREE);
   delay(1000);
   // Print present position in degree value
   DEBUG_SERIAL.println("Present Position(degree) : ");
-  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID1, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID2, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID3, UNIT_DEGREE));
+  DEBUG_SERIAL.println(dxl.getPresentPosition(DXL_ID4, UNIT_DEGREE));
   delay(1000);
 }
