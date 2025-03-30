@@ -6,8 +6,8 @@ void setup() {
   auto cfg = M5.config();
   M5.begin(cfg);
 
-  Serial.begin(57600);  // USBシリアル（PCとの通信）
-  serialToDevice.begin(57600, SERIAL_8N1, 33, 32); // RX=13, TX=14（必要に応じてピン番号調整）
+  Serial.begin(1000000);  // USBシリアル（PCとの通信）
+  serialToDevice.begin(1000000, SERIAL_8N1, 33, 32); // RX=13, TX=14（必要に応じてピン番号調整）
 
   Serial.println("Serial pass-through started.");
 }
