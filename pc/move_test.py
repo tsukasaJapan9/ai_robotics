@@ -1,3 +1,6 @@
+############################################
+# ロボットに組み付けた状態でのサーボテスト
+############################################
 import time
 
 from servo import (
@@ -8,6 +11,7 @@ from servo import (
     set_operating_mode,
     set_position,
     set_torque,
+    set_velocity,
 )
 
 CMD_NORMAL_MODE = 0x00
@@ -15,10 +19,10 @@ CMD_REVERSE_MODE = 0x01
 CMD_VELOCITY_CONTROL_MODE = 0x01
 CMD_POSITION_CONTROL_MODE = 0x03
 
-RIGHT_LEG_ID = 1
-LEFT_LEG_ID = 2
-RIGHT_WHEEL_ID = 4
-LEFT_WHEEL_ID = 3
+RIGHT_LEG_ID = 2
+LEFT_LEG_ID = 1
+RIGHT_WHEEL_ID = 3
+LEFT_WHEEL_ID = 4
 
 
 def main() -> None:
@@ -41,10 +45,10 @@ def main() -> None:
         port_handler, packet_handler, LEFT_LEG_ID, CMD_POSITION_CONTROL_MODE
     )
     set_operating_mode(
-        port_handler, packet_handler, RIGHT_WHEEL_ID, CMD_POSITION_CONTROL_MODE
+        port_handler, packet_handler, RIGHT_WHEEL_ID, CMD_VELOCITY_CONTROL_MODE
     )
     set_operating_mode(
-        port_handler, packet_handler, LEFT_WHEEL_ID, CMD_POSITION_CONTROL_MODE
+        port_handler, packet_handler, LEFT_WHEEL_ID, CMD_VELOCITY_CONTROL_MODE
     )
 
     time.sleep(2)
@@ -61,9 +65,9 @@ def main() -> None:
 
     # ドライブモードを設定
     set_drive_mode(port_handler, packet_handler, RIGHT_LEG_ID, CMD_NORMAL_MODE)
-    set_drive_mode(port_handler, packet_handler, LEFT_LEG_ID, CMD_NORMAL_MODE)
+    set_drive_mode(port_handler, packet_handler, LEFT_LEG_ID, CMD_REVERSE_MODE)
     set_drive_mode(port_handler, packet_handler, RIGHT_WHEEL_ID, CMD_NORMAL_MODE)
-    set_drive_mode(port_handler, packet_handler, LEFT_WHEEL_ID, CMD_NORMAL_MODE)
+    set_drive_mode(port_handler, packet_handler, LEFT_WHEEL_ID, CMD_REVERSE_MODE)
 
     time.sleep(2)
 
@@ -83,29 +87,19 @@ def main() -> None:
     set_torque(port_handler, packet_handler, RIGHT_WHEEL_ID, True)
     set_torque(port_handler, packet_handler, LEFT_WHEEL_ID, True)
 
-    # 初期位置に動かす
-    init_deg = 5
-    set_position(port_handler, packet_handler, RIGHT_LEG_ID, init_deg)
-    set_position(port_handler, packet_handler, LEFT_LEG_ID, init_deg)
-    set_position(port_handler, packet_handler, RIGHT_WHEEL_ID, init_deg)
-    set_position(port_handler, packet_handler, LEFT_WHEEL_ID, init_deg)
+    # wheelを回す
+    set_velocity(port_handler, packet_handler, RIGHT_WHEEL_ID, 60)
+    set_velocity(port_handler, packet_handler, LEFT_WHEEL_ID, 60)
 
-    time.sleep(2)
-
-    # 360度回転させる
-    for deg in range(5, 356):
+    # 初期位置に動かすsuo
+    for i in range(10):
+        if i % 2 == 0:
+            deg = 215
+        else:
+            deg = 215 + 30
         set_position(port_handler, packet_handler, RIGHT_LEG_ID, deg)
         set_position(port_handler, packet_handler, LEFT_LEG_ID, deg)
-        set_position(port_handler, packet_handler, RIGHT_WHEEL_ID, deg)
-        set_position(port_handler, packet_handler, LEFT_WHEEL_ID, deg)
-
-    # 最終位置に動かす
-    last_deg = 180
-    set_position(port_handler, packet_handler, RIGHT_LEG_ID, last_deg)
-    set_position(port_handler, packet_handler, LEFT_LEG_ID, last_deg)
-    set_position(port_handler, packet_handler, RIGHT_WHEEL_ID, last_deg)
-    set_position(port_handler, packet_handler, LEFT_WHEEL_ID, last_deg)
-    time.sleep(2)
+        time.sleep(1)
 
     # トルクを抜く
     set_torque(port_handler, packet_handler, RIGHT_LEG_ID, False)
