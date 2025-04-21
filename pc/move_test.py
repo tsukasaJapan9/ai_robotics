@@ -88,11 +88,11 @@ def main() -> None:
     set_torque(port_handler, packet_handler, LEFT_WHEEL_ID, True)
 
     # wheelを回す
-    set_velocity(port_handler, packet_handler, RIGHT_WHEEL_ID, 60)
-    set_velocity(port_handler, packet_handler, LEFT_WHEEL_ID, 60)
+    # set_velocity(port_handler, packet_handler, RIGHT_WHEEL_ID, 60)
+    # set_velocity(port_handler, packet_handler, LEFT_WHEEL_ID, 60)
 
-    # 初期位置に動かすsuo
-    for i in range(10):
+    # 初期位置に動かす
+    for i in range(20):
         if i % 2 == 0:
             deg = 215
         else:
