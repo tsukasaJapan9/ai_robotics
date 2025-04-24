@@ -11,7 +11,6 @@ from servo import (
     set_operating_mode,
     set_position,
     set_torque,
-    set_velocity,
 )
 
 CMD_NORMAL_MODE = 0x00
@@ -88,24 +87,21 @@ def main() -> None:
     set_torque(port_handler, packet_handler, LEFT_WHEEL_ID, True)
 
     # wheelを回す
-    # set_velocity(port_handler, packet_handler, RIGHT_WHEEL_ID, 60)
-    # set_velocity(port_handler, packet_handler, LEFT_WHEEL_ID, 60)
+    # set_velocity(port_handler, packet_handler, RIGHT_WHEEL_ID, -60)
+    # set_velocity(port_handler, packet_handler, LEFT_WHEEL_ID, -60)
 
-    # 初期位置に動かす
-    for i in range(20):
-        if i % 2 == 0:
-            deg = 215
-        else:
-            deg = 215 + 30
-        set_position(port_handler, packet_handler, RIGHT_LEG_ID, deg)
-        set_position(port_handler, packet_handler, LEFT_LEG_ID, deg)
-        time.sleep(1)
+    deg = 205
+    # deg = 215 + 30
+    set_position(port_handler, packet_handler, RIGHT_LEG_ID, deg)
+    set_position(port_handler, packet_handler, LEFT_LEG_ID, deg)
 
-    # トルクを抜く
-    set_torque(port_handler, packet_handler, RIGHT_LEG_ID, False)
-    set_torque(port_handler, packet_handler, LEFT_LEG_ID, False)
-    set_torque(port_handler, packet_handler, RIGHT_WHEEL_ID, False)
-    set_torque(port_handler, packet_handler, LEFT_WHEEL_ID, False)
+    # time.sleep(10)
+
+    # # トルクを抜く
+    # set_torque(port_handler, packet_handler, RIGHT_LEG_ID, False)
+    # set_torque(port_handler, packet_handler, LEFT_LEG_ID, False)
+    # set_torque(port_handler, packet_handler, RIGHT_WHEEL_ID, False)
+    # set_torque(port_handler, packet_handler, LEFT_WHEEL_ID, False)
 
 
 if __name__ == "__main__":
