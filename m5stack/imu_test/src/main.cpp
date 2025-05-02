@@ -31,7 +31,7 @@ void loop()
   M5.Imu.getAccel(&ax, &ay, &az);
 
   // PCに送信
-  Serial.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gx, gy, gz, ax, ay, az);
+  Serial.printf("%7.3f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f\n", gx, gy, gz, ax, ay, az);
 
   // --- ボールの位置更新（gyに応じて左右移動） ---
   float scale = 0.1;
@@ -52,18 +52,24 @@ void loop()
 
   // 1フレーム前のボールを消去する
   M5.Lcd.fillRect(prevBallX - BALL_RADIUS, prevBallY - BALL_RADIUS, BALL_RADIUS * 2 + 1, BALL_RADIUS * 2 + 1, BLACK);
-
   M5.Lcd.fillCircle((int)ballX, (int)ballY, BALL_RADIUS, RED);
 
   prevBallX = ballX;
   prevBallY = ballY;
 
   M5.Lcd.setCursor(10, 10);
-  M5.Lcd.printf("gx: %6.2f dps\n", gx);
+  M5.Lcd.printf("gx: %7.3f dps\n", gx);
   M5.Lcd.setCursor(10, 30);
-  M5.Lcd.printf("gy: %6.2f dps\n", gy);
+  M5.Lcd.printf("gy: %7.3f dps\n", gy);
   M5.Lcd.setCursor(10, 50);
-  M5.Lcd.printf("gz: %6.2f dps\n", gz);
+  M5.Lcd.printf("gz: %7.3f dps\n", gz);
+
+  M5.Lcd.setCursor(10, 70);
+  M5.Lcd.printf("ax: %7.3f g\n", ax);
+  M5.Lcd.setCursor(10, 90);
+  M5.Lcd.printf("ay: %7.3f g\n", ay);
+  M5.Lcd.setCursor(10, 110);
+  M5.Lcd.printf("az: %7.3f g\n", az);
 
   if (M5.BtnC.wasPressed())
   {
