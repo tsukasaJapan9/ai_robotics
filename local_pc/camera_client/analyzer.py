@@ -1,8 +1,10 @@
 import base64
+import io
 import queue
 import threading
 import time
 import requests
+from PIL import Image
 
 # 最新の解析結果と解析に使った画像
 latest_analysis: str = ""
@@ -25,8 +27,10 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             continue
         last_analyzed = now
 
-        # SOI/EOI マーカーとサイズで JPEG の妥当性を確認
-        if not (len(frame) > 100 and frame[:2] == b"\xff\xd8" and frame[-2:] == b"\xff\xd9"):
+        # Pillow で実際にデコードして JPEG の妥当性を確認
+        try:
+            Image.open(io.BytesIO(frame)).verify()
+        except Exception:
             print(f"[{time.strftime('%H:%M:%S')}] Invalid frame (size={len(frame)}), skipping")
             continue
 
