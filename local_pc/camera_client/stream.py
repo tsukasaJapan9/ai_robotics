@@ -41,8 +41,12 @@ def _read_stream(stream_url: str, frame_queue: "queue.Queue[bytes]"):
                     buf = buf[frame_start + content_length:]
 
                 # 古いフレームは捨て、常に最新フレームだけ保持する
-                while not frame_queue.empty():
-                    frame_queue.get_nowait()
+                # empty() + get_nowait() は非アトミックなので try/except で処理する
+                while True:
+                    try:
+                        frame_queue.get_nowait()
+                    except queue.Empty:
+                        break
                 frame_queue.put(frame)
 
                 global latest_frame
