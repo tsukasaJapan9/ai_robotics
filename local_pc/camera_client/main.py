@@ -55,7 +55,7 @@ def main():
     parser.add_argument("--api-url",    default="http://localhost:1234")
     parser.add_argument("--model",      default="gemma4:e4b")
     parser.add_argument("--prompt",     default="この画像に何が映っているか説明してください。")
-    parser.add_argument("--interval",   type=float, default=3.0, help="分析間隔（秒）")
+    parser.add_argument("--interval",   type=float, default=0.0, help="分析間隔（秒）")
     args = parser.parse_args()
 
     print(f"Stream: {args.stream_url}")
