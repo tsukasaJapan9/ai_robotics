@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Camera Viewer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #111; color: #eee; font-family: sans-serif; }
+
+    header {
+      padding: 12px 20px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #333;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 48px);
+    }
+
+    .panel {
+      background: #1a1a1a;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #888;
+      padding: 10px 14px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .panel img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: contain;
+      background: #000;
+    }
+
+    #analysis-text {
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #ccc;
+      overflow-y: auto;
+      flex: 1;
+      white-space: pre-wrap;
+    }
+
+    #status {
+      font-size: 0.75rem;
+      color: #555;
+      padding: 6px 14px;
+      border-top: 1px solid #2a2a2a;
+    }
+  </style>
+</head>
+<body>
+  <header>Camera Viewer</header>
+  <div class="container">
+    <div class="panel">
+      <h2>Live Stream</h2>
+      <img id="live" src="" alt="live stream">
+    </div>
+    <div class="panel">
+      <h2>AI Analysis</h2>
+      <img id="analyzed-img" src="" alt="analyzed frame">
+      <div id="analysis-text">—</div>
+      <div id="status">Waiting...</div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:8000';
+
+    document.getElementById('live').src = `${API}/stream`;
+
+    async function fetchAnalysis() {
+      try {
+        const resp = await fetch(`${API}/analysis`);
+        const data = await resp.json();
+        if (data.result) {
+          document.getElementById('analysis-text').textContent = data.result;
+          // キャッシュ回避のためタイムスタンプを付与
+          document.getElementById('analyzed-img').src = `${API}/analysis/image?t=${Date.now()}`;
+          document.getElementById('status').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+        }
+      } catch (e) {
+        document.getElementById('status').textContent = `Error: ${e.message}`;
+      }
+    }
+
+    fetchAnalysis();
+    setInterval(fetchAnalysis, 2000);
+  </script>
+</body>
+</html>
