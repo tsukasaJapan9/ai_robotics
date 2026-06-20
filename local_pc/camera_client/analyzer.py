@@ -41,6 +41,7 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
         }
         try:
             is_analyzing = True
+            print(f"[{time.strftime('%H:%M:%S')}] Analyzing...")
             resp = requests.post(f"{api_url}/v1/chat/completions", json=payload, timeout=60)
             resp.raise_for_status()
             latest_analysis = resp.json()["choices"][0]["message"]["content"]
