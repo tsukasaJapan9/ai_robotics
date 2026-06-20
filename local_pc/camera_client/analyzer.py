@@ -7,6 +7,7 @@ import requests
 # 最新の解析結果と解析に使った画像
 latest_analysis: str = ""
 analyzed_image: bytes | None = None
+is_analyzing: bool = False
 
 
 def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float):
@@ -39,6 +40,7 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             "stream": False,
         }
         try:
+            is_analyzing = True
             resp = requests.post(f"{api_url}/v1/chat/completions", json=payload, timeout=60)
             resp.raise_for_status()
             latest_analysis = resp.json()["choices"][0]["message"]["content"]
@@ -46,6 +48,8 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             print(f"[{time.strftime('%H:%M:%S')}] {latest_analysis}\n")
         except Exception as e:
             print(f"Analysis error: {e}")
+        finally:
+            is_analyzing = False
 
 
 def start(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float):

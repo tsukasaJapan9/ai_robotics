@@ -28,7 +28,7 @@ async def mjpeg_stream():
 
 @app.get("/analysis")
 async def get_analysis():
-    return {"result": analyzer.latest_analysis}
+    return {"result": analyzer.latest_analysis, "is_analyzing": analyzer.is_analyzing}
 
 
 @app.get("/analysis/image")

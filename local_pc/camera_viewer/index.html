@@ -100,8 +100,10 @@
           document.getElementById('analysis-text').textContent = data.result;
           // キャッシュ回避のためタイムスタンプを付与
           document.getElementById('analyzed-img').src = `${API}/analysis/image?t=${Date.now()}`;
-          document.getElementById('status').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
         }
+        document.getElementById('status').textContent = data.is_analyzing
+          ? '推論中...'
+          : `Updated: ${new Date().toLocaleTimeString()}`;
       } catch (e) {
         document.getElementById('status').textContent = `Error: ${e.message}`;
       }
