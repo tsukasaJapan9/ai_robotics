@@ -1,11 +1,13 @@
 import argparse
 import base64
+import queue
+import threading
 import time
 import requests
 
 
-def iter_mjpeg_frames(stream_url: str):
-    """MJPEG ストリームから JPEG フレームを順に yield する"""
+def stream_frames(stream_url: str, frame_queue: "queue.Queue[bytes]"):
+    """MJPEG ストリームを常時読み続け、最新フレームをキューに入れるスレッド"""
     # 接続タイムアウト 10 秒、read タイムアウトなし（ストリーム接続のため）
     with requests.get(stream_url, stream=True, timeout=(10, None)) as resp:
         resp.raise_for_status()
@@ -18,8 +20,12 @@ def iter_mjpeg_frames(stream_url: str):
                 end = buf.find(b"\xff\xd9")    # EOI
                 if start == -1 or end == -1 or end < start:
                     break
-                yield buf[start:end + 2]
+                frame = buf[start:end + 2]
                 buf = buf[end + 2:]
+                # 古いフレームは捨て、常に最新フレームだけ保持する
+                while not frame_queue.empty():
+                    frame_queue.get_nowait()
+                frame_queue.put(frame)
 
 
 def analyze_frame(frame_bytes: bytes, api_url: str, model: str, prompt: str) -> str:
@@ -56,8 +62,18 @@ def main():
     print(f"Model:  {args.model}")
     print(f"Interval: {args.interval}s\n")
 
+    frame_queue: queue.Queue[bytes] = queue.Queue()
+    t = threading.Thread(target=stream_frames, args=(args.stream_url, frame_queue), daemon=True)
+    t.start()
+
     last_analyzed = 0.0
-    for frame in iter_mjpeg_frames(args.stream_url):
+    while True:
+        try:
+            frame = frame_queue.get(timeout=30)
+        except queue.Empty:
+            print("Stream timeout")
+            break
+
         now = time.time()
         if now - last_analyzed < args.interval:
             continue
