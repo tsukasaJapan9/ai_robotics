@@ -1,18 +1,30 @@
 import asyncio
 import stream
 import analyzer
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, StreamingResponse
 
-app = FastAPI()
+_shutdown = False
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global _shutdown
+    _shutdown = False
+    yield
+    _shutdown = True
+
+
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"])
 
 
 @app.get("/stream")
 async def mjpeg_stream():
     async def generate():
-        while True:
+        while not _shutdown:
             frame = stream.latest_frame
             if frame:
                 yield (
