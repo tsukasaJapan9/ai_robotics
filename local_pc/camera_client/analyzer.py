@@ -25,6 +25,11 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             continue
         last_analyzed = now
 
+        # SOI/EOI マーカーとサイズで JPEG の妥当性を確認
+        if not (len(frame) > 100 and frame[:2] == b"\xff\xd8" and frame[-2:] == b"\xff\xd9"):
+            print(f"[{time.strftime('%H:%M:%S')}] Invalid frame (size={len(frame)}), skipping")
+            continue
+
         image_b64 = base64.b64encode(frame).decode()
         payload = {
             "model": model,
