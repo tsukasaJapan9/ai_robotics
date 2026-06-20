@@ -30,6 +30,8 @@ ai_robotics/
 ├── local_pc/           # PC 側で動かす Python スクリプト
 ├── docs/               # プロジェクトドキュメント
 │   ├── architecture/   # アーキテクチャ設計
+│   ├── firmware/       # ファームウェア開発ドキュメント
+│   ├── local_pc/       # PC 側ツール・環境構築ドキュメント
 │   ├── project/        # プロジェクト関連ドキュメント
 │   └── spec/           # 仕様書
 ├── service/            # サービス・バックエンド関連
