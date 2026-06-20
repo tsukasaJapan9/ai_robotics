@@ -25,7 +25,9 @@ def main():
     stream.start(args.stream_url, frame_queue)
     analyzer.start(frame_queue, args.api_url, args.model, args.prompt, args.interval)
 
-    uvicorn.run(app, host="0.0.0.0", port=args.port)
+    config = uvicorn.Config(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
+    server = uvicorn.Server(config)
+    server.run()
 
 
 if __name__ == "__main__":
