@@ -55,9 +55,32 @@ ollama rm gemma4:e4b
 ## 動作確認
 
 ```bash
-# テキスト
-ollama run gemma4:e4b "Hello"
+# テキスト（対話モード）
+ollama run gemma4:e4b
 
-# API
+# モデル一覧
 curl http://localhost:11434/api/tags
+```
+
+## curl でチャット
+
+```bash
+curl http://localhost:11434/api/generate \
+  -d '{
+    "model": "gemma4:e4b",
+    "prompt": "Hello",
+    "stream": false
+  }'
+```
+
+画像を渡す場合（base64 エンコード）：
+
+```bash
+curl http://localhost:11434/api/generate \
+  -d "{
+    \"model\": \"gemma4:e4b\",
+    \"prompt\": \"Describe this image.\",
+    \"images\": [\"$(base64 -w0 image.jpg)\"],
+    \"stream\": false
+  }"
 ```
