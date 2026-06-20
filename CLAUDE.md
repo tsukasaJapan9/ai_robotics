@@ -2,7 +2,21 @@
 
 @.claude/rules/firmware.md
 @.claude/rules/coding_style.md
+@.claude/rules/git.md
 
+
+## ファイル保存先
+
+| 種類 | 保存先 |
+|---|---|
+| 開発ナレッジ | `.claude/knowledge/` |
+| ルール | `.claude/rules/` |
+| スキル | `.claude/skills/` |
+| サブエージェント | `.claude/agents/` |
+| メモリ | `.claude/memory/` |
+| ドキュメント | `docs/<適切なサブディレクトリ>/` |
+
+ファイルパスはリポジトリルートからの相対パスで記載する。
 
 ## ディレクトリ構成
 
