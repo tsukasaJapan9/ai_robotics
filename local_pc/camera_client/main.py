@@ -38,7 +38,7 @@ def main():
     parser = argparse.ArgumentParser(description="M5Stack カメラ映像を ollama で解析する")
     parser.add_argument("--stream-url", default="http://192.168.0.9/stream")
     parser.add_argument("--ollama-url", default="http://localhost:11434")
-    parser.add_argument("--model",      default="gemma4")
+    parser.add_argument("--model",      default="gemma4:e4b")
     parser.add_argument("--prompt",     default="Describe what you see in this image.")
     parser.add_argument("--interval",   type=float, default=3.0, help="分析間隔（秒）")
     args = parser.parse_args()
