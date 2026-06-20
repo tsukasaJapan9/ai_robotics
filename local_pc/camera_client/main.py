@@ -6,7 +6,8 @@ import requests
 
 def iter_mjpeg_frames(stream_url: str):
     """MJPEG ストリームから JPEG フレームを順に yield する"""
-    with requests.get(stream_url, stream=True, timeout=10) as resp:
+    # 接続タイムアウト 10 秒、read タイムアウトなし（ストリーム接続のため）
+    with requests.get(stream_url, stream=True, timeout=(10, None)) as resp:
         resp.raise_for_status()
         buf = b""
         for chunk in resp.iter_content(chunk_size=4096):
@@ -47,7 +48,7 @@ def main():
     parser.add_argument("--stream-url", default="http://192.168.0.9/stream")
     parser.add_argument("--api-url",    default="http://localhost:1234")
     parser.add_argument("--model",      default="gemma4:e4b")
-    parser.add_argument("--prompt",     default="Describe what you see in this image.")
+    parser.add_argument("--prompt",     default="この画像に何が映っているか説明してください。")
     parser.add_argument("--interval",   type=float, default=3.0, help="分析間隔（秒）")
     args = parser.parse_args()
 
