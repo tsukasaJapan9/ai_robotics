@@ -12,14 +12,17 @@ def apply(analysis_text: str) -> bool:
     """AI応答から {"x": N, "y": N, "reason": "..."} をパースしてサーボを動かす。
     パースできなければ False（サーボは前回位置を維持）。
     """
-    # レスポンス中の JSON オブジェクトを抽出
-    match = re.search(r'\{.*\}', analysis_text, re.DOTALL)
+    # レスポンス中の JSON（配列またはオブジェクト）を抽出
+    match = re.search(r'(\[.*\]|\{.*\})', analysis_text, re.DOTALL)
     if not match:
         return False
     try:
-        data = json.loads(match.group())
+        parsed = json.loads(match.group())
     except json.JSONDecodeError:
         return False
+
+    # リストで返ってきた場合は最後の要素を使う
+    data = parsed[-1] if isinstance(parsed, list) else parsed
 
     if "x" not in data or "y" not in data:
         return False
