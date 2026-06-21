@@ -21,4 +21,4 @@ M5Stack CoreS3 ベース（Kickstarter クラウドファンディング品）
 
 ### camera_client での制御範囲
 
-PC 側（servo_control.py）では Y 軸を 50〜85° に絞って使用。
+PC 側（servo_control.py）では Y 軸を 50〜85°（中央 60°）に絞って使用。

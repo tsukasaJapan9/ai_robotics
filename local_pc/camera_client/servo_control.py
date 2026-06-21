@@ -9,9 +9,9 @@ _KEYWORD_MAP: list[tuple[str, int, int]] = [
     ("upper-right", 120, 50),
     ("lower-left",  200, 85),
     ("lower-right", 120, 85),
-    ("center",      160, 67),
-    ("left",        200, 67),
-    ("right",       120, 67),
+    ("center",      160, 60),
+    ("left",        200, 60),
+    ("right",       120, 60),
     ("up",          160, 50),
     ("down",        160, 85),
 ]
