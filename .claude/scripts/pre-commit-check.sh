@@ -15,16 +15,27 @@ PATTERNS=(
     '-----BEGIN.+PRIVATE KEY-----'
 )
 
+# このスクリプト自身はチェック対象から除外
+EXCLUDE_FILES=(".claude/scripts/pre-commit-check.sh")
+
 found=0
 
 while IFS= read -r file; do
+    # 除外ファイルはスキップ
+    skip=false
+    for excl in "${EXCLUDE_FILES[@]}"; do
+        [[ "$file" == "$excl" ]] && skip=true && break
+    done
+    $skip && continue
+
     # バイナリファイルはスキップ
     if git show ":$file" | grep -qP '\x00' 2>/dev/null; then
         continue
     fi
+
     for pat in "${PATTERNS[@]}"; do
         # コメント行（// # * <!--）は除外
-        result=$(git show ":$file" | grep -iP "$pat" | grep -vP '^\s*(//|#|\*|<!--)' 2>/dev/null || true)
+        result=$(git show ":$file" | grep -iP -e "$pat" | grep -vP '^\s*(//|#|\*|<!--)' 2>/dev/null || true)
         if [ -n "$result" ]; then
             echo "[secrets] $file:"
             echo "$result" | head -3
