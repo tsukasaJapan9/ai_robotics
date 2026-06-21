@@ -4,10 +4,11 @@ import os
 import queue
 import threading
 import time
-from typing import Any
+from typing import Any, cast
+
 import requests
-from PIL import Image
 import servo_control
+from PIL import Image
 
 # 最新の解析結果と解析に使った画像
 latest_analysis: str = ""
@@ -28,7 +29,14 @@ def _save_frame(frame: bytes, label: str):
         f.write(frame)
 
 
-def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float, servo_enabled: bool = False):
+def _analyze_loop(
+    frame_queue: "queue.Queue[bytes]",
+    api_url: str,
+    model: str,
+    prompt: str,
+    interval: float,
+    servo_enabled: bool = False,
+):
     global latest_analysis, analyzed_image, is_analyzing
     last_analyzed = 0.0
 
@@ -60,23 +68,41 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             history_text = "\nこれまでの注目履歴:\n" + "\n".join(
                 f"- [{e['time']}] {e['result']}" for e in history
             )
-        messages: list[dict[str, Any]] = [{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": prompt + history_text},
-                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}},
-            ],
-        }]
+        messages: list[dict[str, Any]] = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt + history_text},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"},
+                    },
+                ],
+            }
+        ]
         payload = {
             "model": model,
             "messages": messages,
             "stream": False,
         }
 
+        print("---------------------------------")
+        for m in messages:
+            content = m["content"]
+            if isinstance(content, list):
+                content = [
+                    c if cast(dict[str, Any], c).get("type") != "image_url" else {"type": "image_url", "image_url": {"url": "<base64>"}}
+                    for c in content
+                ]
+            print({**m, "content": content})
+        print("---------------------------------")
+
         try:
             is_analyzing = True
             print(f"[{time.strftime('%H:%M:%S')}] Analyzing...")
-            resp = requests.post(f"{api_url}/v1/chat/completions", json=payload, timeout=60)
+            resp = requests.post(
+                f"{api_url}/v1/chat/completions", json=payload, timeout=60
+            )
             resp.raise_for_status()
             result = resp.json()["choices"][0]["message"]["content"]
 
@@ -97,7 +123,15 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             is_analyzing = False
 
 
-def start(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float, save_frames: bool = False, servo_enabled: bool = False):
+def start(
+    frame_queue: "queue.Queue[bytes]",
+    api_url: str,
+    model: str,
+    prompt: str,
+    interval: float,
+    save_frames: bool = False,
+    servo_enabled: bool = False,
+):
     global _save_frames
     _save_frames = save_frames
     t = threading.Thread(
