@@ -1,22 +1,45 @@
 import argparse
 import queue
-import stream
+
 import analyzer
 import servo_client
+import stream
 import uvicorn
 from api import app
 
+SYSTEM_PROMPT = """
+あなたは好奇心旺盛なロボットであり、人間の世界を探索しています。
+画像の中で最も目を引くものに注目し、その位置に合わせたサーボ角度を以下の形式で答えてください。
+
+{"x": <角度>, "y": <角度>}
+
+X軸（水平）: 0〜360（160が正面中央、小さいほど右、大きいほど左）
+Y軸（垂直）: 50〜85（60が正面中央、小さいほど上、大きいほど下）
+
+また、何に注目したかとその理由も教えてください。
+"""
+
 
 def main():
-    parser = argparse.ArgumentParser(description="M5Stack カメラ映像を LM Studio で解析する")
+    parser = argparse.ArgumentParser(
+        description="M5Stack カメラ映像を LM Studio で解析する"
+    )
     parser.add_argument("--stream-url", default="http://192.168.0.9/stream")
-    parser.add_argument("--api-url",    default="http://localhost:1234")
-    parser.add_argument("--model",      default="gemma4:e4b")
-    parser.add_argument("--prompt",     default="この画像の中で最も目を引くものはどこにありますか？left / right / upper-left / upper-right / lower-left / lower-right / up / down / center のいずれか一単語で答えてください。またその理由も教えてください。")
-    parser.add_argument("--interval",   type=float, default=0.0, help="分析間隔（秒）")
-    parser.add_argument("--port",       type=int,   default=8000, help="API サーバポート")
-    parser.add_argument("--save-frames", action="store_true", help="推論フレームを debug_frames/ に保存する")
-    parser.add_argument("--servo-url",  default="", help="wonder_eye サーボ API の URL（例: http://192.168.0.10）")
+    parser.add_argument("--api-url", default="http://localhost:1234")
+    parser.add_argument("--model", default="gemma4:e4b")
+    parser.add_argument("--prompt", default=SYSTEM_PROMPT)
+    parser.add_argument("--interval", type=float, default=0.0, help="分析間隔（秒）")
+    parser.add_argument("--port", type=int, default=8000, help="API サーバポート")
+    parser.add_argument(
+        "--save-frames",
+        action="store_true",
+        help="推論フレームを debug_frames/ に保存する",
+    )
+    parser.add_argument(
+        "--servo-url",
+        default="",
+        help="wonder_eye サーボ API の URL（例: http://192.168.0.10）",
+    )
     args = parser.parse_args()
 
     print(f"Stream:   {args.stream_url}")
@@ -32,9 +55,19 @@ def main():
 
     frame_queue: queue.Queue[bytes] = queue.Queue()
     stream.start(args.stream_url, frame_queue)
-    analyzer.start(frame_queue, args.api_url, args.model, args.prompt, args.interval, args.save_frames, servo_enabled=bool(args.servo_url))
+    analyzer.start(
+        frame_queue,
+        args.api_url,
+        args.model,
+        args.prompt,
+        args.interval,
+        args.save_frames,
+        servo_enabled=bool(args.servo_url),
+    )
 
-    config = uvicorn.Config(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
+    config = uvicorn.Config(
+        app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0
+    )
     server = uvicorn.Server(config)
     server.run()
 
