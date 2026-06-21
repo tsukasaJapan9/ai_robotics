@@ -54,18 +54,19 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
         if _save_frames:
             _save_frame(frame, "input")
 
-        # 過去の応答を assistant ターンとして追加
-        messages: list[dict[str, Any]] = []
-        for entry in history:
-            messages.append({"role": "assistant", "content": entry["result"]})
-        # 現在のフレームを最後のターンとして追加
-        messages.append({
+        # 履歴をテキストとしてプロンプトに埋め込む（マルチターンはロール交互制約があるため）
+        history_text = ""
+        if history:
+            history_text = "\nこれまでの注目履歴:\n" + "\n".join(
+                f"- [{e['time']}] {e['result']}" for e in history
+            )
+        messages: list[dict[str, Any]] = [{
             "role": "user",
             "content": [
-                {"type": "text", "text": prompt},
+                {"type": "text", "text": prompt + history_text},
                 {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}},
             ],
-        })
+        }]
         payload = {
             "model": model,
             "messages": messages,
