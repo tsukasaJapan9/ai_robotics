@@ -54,10 +54,9 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
         if _save_frames:
             _save_frame(frame, "input")
 
-        # 過去の応答を user/assistant ターンとして追加（画像なし）
+        # 過去の応答を assistant ターンとして追加
         messages: list[dict[str, Any]] = []
         for entry in history:
-            messages.append({"role": "user", "content": prompt})
             messages.append({"role": "assistant", "content": entry["result"]})
         # 現在のフレームを最後のターンとして追加
         messages.append({
