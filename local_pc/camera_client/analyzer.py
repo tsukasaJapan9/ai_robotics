@@ -1,10 +1,14 @@
 import base64
 import io
+import os
 import queue
 import threading
 import time
 import requests
 from PIL import Image
+
+DEBUG_DIR = "debug_frames"
+os.makedirs(DEBUG_DIR, exist_ok=True)
 
 # 最新の解析結果と解析に使った画像
 latest_analysis: str = ""
@@ -16,7 +20,7 @@ _NO_IMAGE_HINTS = ["画像が提供", "画像がない", "no image", "no picture
 
 
 def _save_debug_frame(frame: bytes, label: str):
-    path = f"debug_{label}_{time.strftime('%H%M%S')}.jpg"
+    path = os.path.join(DEBUG_DIR, f"{label}_{time.strftime('%H%M%S')}.jpg")
     with open(path, "wb") as f:
         f.write(frame)
     return path
