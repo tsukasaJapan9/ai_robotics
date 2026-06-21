@@ -4,6 +4,7 @@ import os
 import queue
 import threading
 import time
+from typing import Any
 import requests
 from PIL import Image
 import servo_control
@@ -53,17 +54,22 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
         if _save_frames:
             _save_frame(frame, "input")
 
+        # 過去の応答を user/assistant ターンとして追加（画像なし）
+        messages: list[dict[str, Any]] = []
+        for entry in history:
+            messages.append({"role": "user", "content": prompt})
+            messages.append({"role": "assistant", "content": entry["result"]})
+        # 現在のフレームを最後のターンとして追加
+        messages.append({
+            "role": "user",
+            "content": [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}},
+            ],
+        })
         payload = {
             "model": model,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}},
-                    ],
-                }
-            ],
+            "messages": messages,
             "stream": False,
         }
 
