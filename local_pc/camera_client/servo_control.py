@@ -1,3 +1,4 @@
+import json
 import re
 import servo_client
 
@@ -8,13 +9,23 @@ Y_MIN, Y_MAX = 50, 85
 
 
 def apply(analysis_text: str) -> bool:
-    """AI応答から {"x": N, "y": N} を抽出してサーボを動かす。
+    """AI応答から {"x": N, "y": N, "reason": "..."} をパースしてサーボを動かす。
     パースできなければ False（サーボは前回位置を維持）。
     """
-    x_match = re.search(r'"x"\s*:\s*(\d+)', analysis_text)
-    y_match = re.search(r'"y"\s*:\s*(\d+)', analysis_text)
-    if not x_match or not y_match:
+    # レスポンス中の JSON オブジェクトを抽出
+    match = re.search(r'\{.*\}', analysis_text, re.DOTALL)
+    if not match:
         return False
-    x = max(X_MIN, min(X_MAX, int(x_match.group(1))))
-    y = max(Y_MIN, min(Y_MAX, int(y_match.group(1))))
+    try:
+        data = json.loads(match.group())
+    except json.JSONDecodeError:
+        return False
+
+    if "x" not in data or "y" not in data:
+        return False
+
+    x = max(X_MIN, min(X_MAX, int(data["x"])))
+    y = max(Y_MIN, min(Y_MAX, int(data["y"])))
+    if reason := data.get("reason"):
+        print(f"reason: {reason}")
     return servo_client.move(x=x, y=y)
