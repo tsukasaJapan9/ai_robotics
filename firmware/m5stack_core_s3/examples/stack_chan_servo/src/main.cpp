@@ -4,7 +4,7 @@
 //
 // サーボ: SCS0009（Feetech シリアルバスサーボ）
 // 通信: UART Serial2（RX=GPIO7, TX=GPIO6, 1Mbps）、M5IOE1(I2C 0x6F)経由
-// X軸（水平）: 0〜300度、初期位置 150度（角度制限不要）
+// X軸（水平）: 0〜360度、初期位置 160度（角度制限不要）
 // Y軸（垂直）: 5〜85度推奨、初期位置 90度
 //   限界角度で動作させるとサーボがロックし故障する恐れがあるため制限する
 //
@@ -24,10 +24,10 @@
 #include <SD.h>
 
 static const int SD_CS_PIN = 4;
-static const int X_CENTER  = 150;
-static const int Y_CENTER  = 90;
+static const int X_CENTER  = 160;
+static const int Y_CENTER  = 45;
 static const int X_MIN     = 0;    // 物理的な可動範囲
-static const int X_MAX     = 300;
+static const int X_MAX     = 360;
 static const int Y_MIN     = 5;    // 故障防止のため限界角度を避ける
 static const int Y_MAX     = 85;
 
@@ -114,6 +114,7 @@ void setup() {
     servo.begin(7, X_CENTER, 0, 6, Y_CENTER, 0, M5_SCS, &M5.In_I2C);
     delay(500);
     servo.motion(greet);
+    servo.moveXY(X_CENTER, Y_CENTER, 500);
 
     // WiFi 接続
     Config config = loadConfig();
