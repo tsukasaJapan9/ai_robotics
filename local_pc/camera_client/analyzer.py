@@ -12,6 +12,7 @@ import servo_control
 latest_analysis: str = ""
 analyzed_image: bytes | None = None
 is_analyzing: bool = False
+history: list[dict[str, str]] = []  # {"time": str, "result": str} の最大10件
 
 _NO_IMAGE_HINTS = ["画像が提供", "画像がない", "no image", "no picture", "cannot see"]
 
@@ -78,6 +79,9 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
 
             latest_analysis = result
             analyzed_image = frame
+            history.append({"time": time.strftime("%H:%M:%S"), "result": result})
+            if len(history) > 10:
+                history.pop(0)
             print(f"[{time.strftime('%H:%M:%S')}] {result}\n")
             if servo_enabled:
                 servo_control.apply(result)

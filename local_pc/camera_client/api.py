@@ -43,6 +43,11 @@ async def get_analysis():
     return {"result": analyzer.latest_analysis, "is_analyzing": analyzer.is_analyzing}
 
 
+@app.get("/analysis/history")
+async def get_analysis_history():
+    return {"history": list(reversed(analyzer.history))}
+
+
 @app.get("/analysis/image")
 async def get_analyzed_image():
     if analyzer.analyzed_image is None:
