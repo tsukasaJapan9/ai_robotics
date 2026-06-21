@@ -1,17 +1,19 @@
 import servo_client
 
 # キーワード → (X角度, Y角度) のマッピング
+# X: 小→右回転、大→左回転（制限なし、中央160）
+# Y: 小→上、大→下（範囲50〜85、中央67）
 # 複合語を先に評価することで部分一致の誤検知を防ぐ
 _KEYWORD_MAP: list[tuple[str, int, int]] = [
-    ("upper-left",  200, 25),
-    ("upper-right", 120, 25),
-    ("lower-left",  200, 65),
-    ("lower-right", 120, 65),
-    ("center",      160, 45),
-    ("left",        200, 45),
-    ("right",       120, 45),
-    ("up",          160, 25),
-    ("down",        160, 65),
+    ("upper-left",  200, 50),
+    ("upper-right", 120, 50),
+    ("lower-left",  200, 85),
+    ("lower-right", 120, 85),
+    ("center",      160, 67),
+    ("left",        200, 67),
+    ("right",       120, 67),
+    ("up",          160, 50),
+    ("down",        160, 85),
 ]
 
 
