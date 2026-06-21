@@ -12,7 +12,7 @@ def main():
     parser.add_argument("--stream-url", default="http://192.168.0.9/stream")
     parser.add_argument("--api-url",    default="http://localhost:1234")
     parser.add_argument("--model",      default="gemma4:e4b")
-    parser.add_argument("--prompt",     default="この画像で最も興味深いものはどこにありますか？left / right / up / down / center のいずれか一単語で答えてください。またその理由も教えてください。")
+    parser.add_argument("--prompt",     default="この画像の中で最も目を引くものはどこにありますか？left / right / upper-left / upper-right / lower-left / lower-right / up / down / center のいずれか一単語で答えてください。またその理由も教えてください。")
     parser.add_argument("--interval",   type=float, default=0.0, help="分析間隔（秒）")
     parser.add_argument("--port",       type=int,   default=8000, help="API サーバポート")
     parser.add_argument("--save-frames", action="store_true", help="推論フレームを debug_frames/ に保存する")
