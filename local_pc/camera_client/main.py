@@ -2,6 +2,7 @@ import argparse
 import queue
 import stream
 import analyzer
+import servo_client
 import uvicorn
 from api import app
 
@@ -13,18 +14,25 @@ def main():
     parser.add_argument("--model",      default="gemma4:e4b")
     parser.add_argument("--prompt",     default="この画像に何が映っているか説明してください。")
     parser.add_argument("--interval",   type=float, default=0.0, help="分析間隔（秒）")
-    parser.add_argument("--port",        type=int,   default=8000, help="API サーバポート")
-    parser.add_argument("--save-frames", action="store_true",      help="推論フレームを debug_frames/ に保存する")
+    parser.add_argument("--port",       type=int,   default=8000, help="API サーバポート")
+    parser.add_argument("--save-frames", action="store_true", help="推論フレームを debug_frames/ に保存する")
+    parser.add_argument("--servo-url",  default="", help="wonder_eye サーボ API の URL（例: http://192.168.0.10）")
     args = parser.parse_args()
 
     print(f"Stream:   {args.stream_url}")
     print(f"Model:    {args.model}")
     print(f"Interval: {args.interval}s")
+    if args.servo_url:
+        print(f"Servo:    {args.servo_url}")
     print(f"API:      http://localhost:{args.port}\n")
+
+    if args.servo_url:
+        servo_client.setup(args.servo_url)
+        servo_client.center()
 
     frame_queue: queue.Queue[bytes] = queue.Queue()
     stream.start(args.stream_url, frame_queue)
-    analyzer.start(frame_queue, args.api_url, args.model, args.prompt, args.interval, args.save_frames)
+    analyzer.start(frame_queue, args.api_url, args.model, args.prompt, args.interval, args.save_frames, servo_enabled=bool(args.servo_url))
 
     config = uvicorn.Config(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
     server = uvicorn.Server(config)

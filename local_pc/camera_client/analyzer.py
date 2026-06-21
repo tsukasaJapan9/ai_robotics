@@ -6,6 +6,7 @@ import threading
 import time
 import requests
 from PIL import Image
+import servo_control
 
 # 最新の解析結果と解析に使った画像
 latest_analysis: str = ""
@@ -25,7 +26,7 @@ def _save_frame(frame: bytes, label: str):
         f.write(frame)
 
 
-def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float):
+def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float, servo_enabled: bool = False):
     global latest_analysis, analyzed_image, is_analyzing
     last_analyzed = 0.0
 
@@ -78,18 +79,20 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             latest_analysis = result
             analyzed_image = frame
             print(f"[{time.strftime('%H:%M:%S')}] {result}\n")
+            if servo_enabled:
+                servo_control.apply(result)
         except Exception as e:
             print(f"Analysis error: {e}")
         finally:
             is_analyzing = False
 
 
-def start(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float, save_frames: bool = False):
+def start(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float, save_frames: bool = False, servo_enabled: bool = False):
     global _save_frames
     _save_frames = save_frames
     t = threading.Thread(
         target=_analyze_loop,
-        args=(frame_queue, api_url, model, prompt, interval),
+        args=(frame_queue, api_url, model, prompt, interval, servo_enabled),
         daemon=True,
     )
     t.start()
