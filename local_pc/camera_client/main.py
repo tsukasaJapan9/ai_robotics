@@ -13,7 +13,8 @@ def main():
     parser.add_argument("--model",      default="gemma4:e4b")
     parser.add_argument("--prompt",     default="この画像に何が映っているか説明してください。")
     parser.add_argument("--interval",   type=float, default=0.0, help="分析間隔（秒）")
-    parser.add_argument("--port",       type=int,   default=8000, help="API サーバポート")
+    parser.add_argument("--port",        type=int,   default=8000, help="API サーバポート")
+    parser.add_argument("--save-frames", action="store_true",      help="推論フレームを debug_frames/ に保存する")
     args = parser.parse_args()
 
     print(f"Stream:   {args.stream_url}")
@@ -23,7 +24,7 @@ def main():
 
     frame_queue: queue.Queue[bytes] = queue.Queue()
     stream.start(args.stream_url, frame_queue)
-    analyzer.start(frame_queue, args.api_url, args.model, args.prompt, args.interval)
+    analyzer.start(frame_queue, args.api_url, args.model, args.prompt, args.interval, args.save_frames)
 
     config = uvicorn.Config(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
     server = uvicorn.Server(config)

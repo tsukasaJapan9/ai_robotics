@@ -7,27 +7,26 @@ import time
 import requests
 from PIL import Image
 
-DEBUG_DIR = "debug_frames"
-os.makedirs(DEBUG_DIR, exist_ok=True)
-
 # 最新の解析結果と解析に使った画像
 latest_analysis: str = ""
 analyzed_image: bytes | None = None
 is_analyzing: bool = False
 
-# LLM が「画像がない」と判断したときに示すキーワード
 _NO_IMAGE_HINTS = ["画像が提供", "画像がない", "no image", "no picture", "cannot see"]
 
+_save_frames = False
+_debug_dir = "debug_frames"
 
-def _save_debug_frame(frame: bytes, label: str):
-    path = os.path.join(DEBUG_DIR, f"{label}_{time.strftime('%H%M%S')}.jpg")
+
+def _save_frame(frame: bytes, label: str):
+    os.makedirs(_debug_dir, exist_ok=True)
+    path = os.path.join(_debug_dir, f"{label}_{time.strftime('%H%M%S')}.jpg")
     with open(path, "wb") as f:
         f.write(frame)
-    return path
 
 
 def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float):
-    global latest_analysis, analyzed_image
+    global latest_analysis, analyzed_image, is_analyzing
     last_analyzed = 0.0
 
     while True:
@@ -41,18 +40,16 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             continue
         last_analyzed = now
 
-        # [1] Pillow でデコードして JPEG の妥当性を確認
         try:
             Image.open(io.BytesIO(frame)).verify()
-        except Exception as e:
-            path = _save_debug_frame(frame, "invalid")
-            print(f"[{time.strftime('%H:%M:%S')}] [1] Invalid frame (size={len(frame)}): {e} → {path}")
+        except Exception:
+            if _save_frames:
+                _save_frame(frame, "invalid")
             continue
 
-        # [2] 推論に渡すフレームを保存
         image_b64 = base64.b64encode(frame).decode()
-        path = _save_debug_frame(frame, "input")
-        print(f"[{time.strftime('%H:%M:%S')}] [2] Frame ok (size={len(frame)}, b64={len(image_b64)}) → {path}")
+        if _save_frames:
+            _save_frame(frame, "input")
 
         payload = {
             "model": model,
@@ -68,18 +65,15 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             "stream": False,
         }
 
-        # [3] LM Studio に送信
         try:
             is_analyzing = True
-            print(f"[{time.strftime('%H:%M:%S')}] [3] Analyzing...")
+            print(f"[{time.strftime('%H:%M:%S')}] Analyzing...")
             resp = requests.post(f"{api_url}/v1/chat/completions", json=payload, timeout=60)
             resp.raise_for_status()
             result = resp.json()["choices"][0]["message"]["content"]
 
-            # [4] LLM が画像なしと判断したか検出
-            if any(hint in result for hint in _NO_IMAGE_HINTS):
-                path = _save_debug_frame(frame, "no_image_response")
-                print(f"[{time.strftime('%H:%M:%S')}] [4] LLM reported no image → saved {path}")
+            if _save_frames and any(hint in result for hint in _NO_IMAGE_HINTS):
+                _save_frame(frame, "no_image_response")
 
             latest_analysis = result
             analyzed_image = frame
@@ -90,7 +84,9 @@ def _analyze_loop(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, p
             is_analyzing = False
 
 
-def start(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float):
+def start(frame_queue: "queue.Queue[bytes]", api_url: str, model: str, prompt: str, interval: float, save_frames: bool = False):
+    global _save_frames
+    _save_frames = save_frames
     t = threading.Thread(
         target=_analyze_loop,
         args=(frame_queue, api_url, model, prompt, interval),
