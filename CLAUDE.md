@@ -3,6 +3,7 @@
 @.claude/rules/firmware.md
 @.claude/rules/coding_style.md
 @.claude/rules/git.md
+@.claude/rules/docs_style.md
 
 
 ## ファイル保存先
