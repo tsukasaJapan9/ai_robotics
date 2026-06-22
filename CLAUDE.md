@@ -31,10 +31,10 @@ ai_robotics/
 ├── local_pc/           # PC 側で動かす Python スクリプト・モジュール群
 │   └── platform/       # プラットフォーム本体
 │       ├── schemas/    # 共有スキーマパッケージ（全モジュールの path dependency）
-│       ├── pilot/ # Orchestrator（サービスディスカバリ・ワイヤリング）
-│       ├── sensors/    # SensorModule 実装群（例: camera/）
+│       ├── pilots/     # Pilot 実装群（例: wonder_eye/, voice_chat/）
+│       ├── sensors/    # SensorModule 実装群（例: camera/m5stack/, camera/usb/）
 │       ├── inference/  # InferenceModule 実装群（例: openai_compat/, claude/）
-│       └── actions/    # ActionModule 実装群（例: servo/）
+│       └── actions/    # ActionModule 実装群（例: servo/feetech/, servo/dynamixel/）
 ├── docs/               # プロジェクトドキュメント
 │   ├── architecture/   # アーキテクチャ設計
 │   ├── firmware/       # ファームウェア開発ドキュメント

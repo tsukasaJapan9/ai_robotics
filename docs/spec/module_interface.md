@@ -40,29 +40,38 @@ local_pc/
     │   ├── pyproject.toml
     │   └── src/schemas/
     │       └── schemas.py
-    ├── pilot/           # Pilot
-    │   ├── pyproject.toml
-    │   └── src/
-    │       ├── main.py
-    │       ├── discovery.py    # サービスディスカバリ（ポートスキャン）
-    │       └── pipeline.py     # ワイヤリング・推論ループ制御
-    ├── sensors/                # SensorModule 実装群
-    │   └── camera/             # M5StackCameraSensorModule
-    │       ├── pyproject.toml
-    │       └── src/
-    │           ├── main.py
-    │           └── stream.py
-    ├── inference/              # InferenceModule 実装群
-    │   ├── openai_compat/      # OpenAIInferenceModule（LM Studio / Ollama / OpenAI）
+    ├── pilots/                     # Pilot 実装群（ユースケースごとに1つ）
+    │   ├── wonder_eye/             # 視線制御 Pilot
     │   │   ├── pyproject.toml
-    │   │   └── src/main.py
-    │   └── claude/             # ClaudeInferenceModule
+    │   │   └── src/
+    │   │       ├── main.py
+    │   │       ├── discovery.py    # サービスディスカバリ（ポートスキャン）
+    │   │       └── pipeline.py     # ワイヤリング・推論ループ制御
+    │   └── voice_chat/             # 音声対話 Pilot（将来）
     │       ├── pyproject.toml
     │       └── src/main.py
-    └── actions/                # ActionModule 実装群
-        └── servo/              # FeetechServoActionModule
-            ├── pyproject.toml
-            └── src/main.py
+    ├── sensors/                    # SensorModule 実装群
+    │   ├── camera/
+    │   │   ├── m5stack/            # M5StackCameraSensorModule
+    │   │   │   ├── pyproject.toml
+    │   │   │   └── src/main.py
+    │   │   └── usb/                # USBCameraSensorModule（将来）
+    │   └── mic/                    # MicSensorModule（将来）
+    │       └── usb/
+    ├── inference/                  # InferenceModule 実装群
+    │   ├── openai_compat/          # OpenAIInferenceModule（LM Studio / Ollama / OpenAI）
+    │   │   ├── pyproject.toml
+    │   │   └── src/main.py
+    │   └── claude/                 # ClaudeInferenceModule
+    │       ├── pyproject.toml
+    │       └── src/main.py
+    └── actions/                    # ActionModule 実装群
+        ├── servo/
+        │   ├── feetech/            # FeetechServoActionModule
+        │   │   ├── pyproject.toml
+        │   │   └── src/main.py
+        │   └── dynamixel/          # DynamixelServoActionModule（将来）
+        └── arm/                    # ArmActionModule（将来）
 ```
 
 各モジュールは独立した uv プロジェクトとし、`platform/schemas/` を path dependency として参照する。
