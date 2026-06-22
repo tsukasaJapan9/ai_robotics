@@ -9,72 +9,66 @@
 ## アーキテクチャ
 
 ```
-┌──────────────────────────────────────────────────┐
-│              Pilot (中央調停)              │
-│   - モジュール間ルーティング                       │
-│   - 状態管理・コンテキスト共有                     │
-└────────┬──────────────────────────┬──────────────┘
-         │                          │
-┌────────▼────────┐       ┌─────────▼───────┐
-│  Perception     │       │  Action         │
-│  Layer          │       │  Layer          │
-│  ─────────────  │       │  ─────────────  │
-│  CameraModule   │       │  ServoModule    │
-│  MicModule      │       │  ArmModule      │
-│  IMUModule      │       │  DisplayModule  │
-└────────┬────────┘       └─────────▲───────┘
-         │                          │
-┌────────▼──────────────────────────┴───────┐
-│              Cognition Layer               │
-│  ─────────────────────────────────────    │
-│  VLM / LLM (OpenAI互換API で抽象化)        │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐  │
-│  │LM Studio │ │ Ollama   │ │ Claude   │  │
-│  │(local)   │ │(local)   │ │(cloud)   │  │
-│  └──────────┘ └──────────┘ └──────────┘  │
-└────────────────────────────────────────────┘
+SensorModule ──→ Pilot ──→ InferenceModule
+                    │
+                    └──────────→ ActionModule
 ```
 
-**モジュール間インターフェース**: HTTP REST + WebSocket（汎用・言語非依存）
+すべてのモジュール間通信は Pilot を介する。Viewer など読み取り専用クライアントのみ SensorModule の `/stream` に直接接続してよい。
+
+**モジュール間インターフェース**: HTTP REST（汎用・言語非依存）
 
 ## 設計原則
 
 | 原則 | 内容 |
-|------|------|
-| **疎結合** | 各モジュールはHTTP APIを持ち、独立起動・交換可能 |
-| **LLM非依存** | OpenAI互換APIを標準IFとして抽象化 |
-| **HW非依存** | ドライバ層でデバイス差異を吸収 |
+|---|---|
+| **疎結合** | 各モジュールは HTTP API を持ち、独立起動・交換可能 |
+| **LLM非依存** | InferenceModule がバックエンドを抽象化（OpenAI互換 / Claude） |
+| **HW非依存** | 具体クラスがデバイス差異を吸収（例: M5StackCameraSensorModule） |
 | **段階的拡張** | 最小構成から始めてモジュールを足していく |
+
+## モジュール構成
+
+詳細は [docs/spec/module_interface.md](../spec/module_interface.md) を参照。
+
+| モジュール | 基底クラス | 具体クラス例 |
+|---|---|---|
+| センサ | `SensorModule` | `M5StackCameraSensorModule` |
+| 推論 | `InferenceModule` | `OpenAIInferenceModule`, `ClaudeInferenceModule` |
+| アクション | `ActionModule` | `FeetechServoActionModule` |
+| 制御 | `Pilot` | `wonder_eye`, `voice_chat` |
 
 ## 現プロジェクトとの対応
 
 ```
 現在                      →  プラットフォーム化後
 ─────────────────────────────────────────────────
-camera_client/stream.py   →  CameraModule
-camera_client/analyzer.py →  CognitionModule (VLM)
-servo_control.py          →  ServoModule
-api.py (FastAPI)          →  各モジュールの共通IFパターン
+camera_client/stream.py   →  M5StackCameraSensorModule
+camera_client/analyzer.py →  OpenAIInferenceModule
+servo_control.py          →  FeetechServoActionModule
+main.py                   →  pilots/wonder_eye
+api.py (FastAPI)          →  各モジュールの共通 IF パターン
 ```
 
 ## ロードマップ
 
-### Phase 1: パイプラインの整備
-- [ ] モジュールIFの標準化（入出力スキーマ定義）
-- [ ] wonder_eye の安定化・設定ファイル化
-- [ ] LLMバックエンドの切り替えを設定1行で可能に
+### Phase 1: プラットフォーム基盤の整備
+- [ ] `local_pc/platform/` ディレクトリ構成を作成
+- [ ] 共有スキーマ（`platform/schemas/`）を Pydantic で定義
+- [ ] 既存 camera_client を `M5StackCameraSensorModule` / `OpenAIInferenceModule` / `FeetechServoActionModule` に分割
+- [ ] `pilots/wonder_eye` として Pilot を実装（サービスディスカバリ含む）
+- [ ] LLM バックエンドの切り替えを起動引数で可能に
 
-### Phase 2: Perceptionの拡張
-- [ ] 音声入力モジュール（マイク → ASR → LLM）
-- [ ] 複数カメラ対応
-- [ ] センサフュージョン（カメラ + IMU）
+### Phase 2: SensorModule の拡張
+- [ ] `MicSensorModule` の追加（マイク → ASR → LLM）
+- [ ] `IMUSensorModule` の追加
+- [ ] 複数センサのフュージョン
 
-### Phase 3: Actionの拡張
-- [ ] ロボットアームモジュール
-- [ ] 表情・LED表現モジュールの汎用化
-- [ ] アクション定義のDSL化（設定でワイヤリング）
+### Phase 3: ActionModule の拡張
+- [ ] ロボットアームモジュール（`ArmActionModule`）
+- [ ] 表情・LED 表現モジュール
 
-### Phase 4: Pilotの実装
-- [ ] モジュール間のイベントルーティング
+### Phase 4: Pilot の高度化
 - [ ] コンテキスト・記憶の永続化
-- [ ] マルチエージェント構成（思考LLM + 行動LLM を分離）
+- [ ] マルチエージェント構成（思考 LLM + 行動 LLM を分離）
+- [ ] 複数マシン構成への対応（mDNS によるサービスディスカバリ）
