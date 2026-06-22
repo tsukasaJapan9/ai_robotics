@@ -29,11 +29,12 @@ ai_robotics/
 │   └── m5stack_core_s3/ # M5Stack CoreS3 向け PlatformIO プロジェクト
 │       └── examples/    # サンプルコード
 ├── local_pc/           # PC 側で動かす Python スクリプト・モジュール群
-│   ├── platform/       # 共有スキーマパッケージ（全モジュールの path dependency）
-│   ├── orchestrator/   # Orchestrator（サービスディスカバリ・ワイヤリング）
-│   ├── sensors/        # SensorModule 実装群（例: camera/）
-│   ├── inference/      # InferenceModule 実装群（例: openai_compat/, claude/）
-│   └── actions/        # ActionModule 実装群（例: servo/）
+│   └── platform/       # プラットフォーム本体
+│       ├── schemas/    # 共有スキーマパッケージ（全モジュールの path dependency）
+│       ├── orchestrator/ # Orchestrator（サービスディスカバリ・ワイヤリング）
+│       ├── sensors/    # SensorModule 実装群（例: camera/）
+│       ├── inference/  # InferenceModule 実装群（例: openai_compat/, claude/）
+│       └── actions/    # ActionModule 実装群（例: servo/）
 ├── docs/               # プロジェクトドキュメント
 │   ├── architecture/   # アーキテクチャ設計
 │   ├── firmware/       # ファームウェア開発ドキュメント

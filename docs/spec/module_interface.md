@@ -35,35 +35,37 @@ ActionModule          # 基底: /action, /action/reset の契約を定義
 
 ```
 local_pc/
-├── platform/                   # 共有スキーマ（全モジュールの path dependency）
-│   └── src/platform/
-│       └── schemas.py
-├── orchestrator/               # Orchestrator
-│   ├── pyproject.toml
-│   └── src/
-│       ├── main.py
-│       ├── discovery.py        # サービスディスカバリ（ポートスキャン）
-│       └── pipeline.py         # ワイヤリング・推論ループ制御
-├── sensors/                    # SensorModule 実装群
-│   └── camera/                 # M5StackCameraSensorModule
-│       ├── pyproject.toml
-│       └── src/
-│           ├── main.py
-│           └── stream.py
-├── inference/                  # InferenceModule 実装群
-│   ├── openai_compat/          # OpenAIInferenceModule（LM Studio / Ollama / OpenAI）
-│   │   ├── pyproject.toml
-│   │   └── src/main.py
-│   └── claude/                 # ClaudeInferenceModule
-│       ├── pyproject.toml
-│       └── src/main.py
-└── actions/                    # ActionModule 実装群
-    └── servo/                  # FeetechServoActionModule
-        ├── pyproject.toml
-        └── src/main.py
+└── platform/
+    ├── schemas/                # 共有スキーマパッケージ（全モジュールの path dependency）
+    │   ├── pyproject.toml
+    │   └── src/schemas/
+    │       └── schemas.py
+    ├── orchestrator/           # Orchestrator
+    │   ├── pyproject.toml
+    │   └── src/
+    │       ├── main.py
+    │       ├── discovery.py    # サービスディスカバリ（ポートスキャン）
+    │       └── pipeline.py     # ワイヤリング・推論ループ制御
+    ├── sensors/                # SensorModule 実装群
+    │   └── camera/             # M5StackCameraSensorModule
+    │       ├── pyproject.toml
+    │       └── src/
+    │           ├── main.py
+    │           └── stream.py
+    ├── inference/              # InferenceModule 実装群
+    │   ├── openai_compat/      # OpenAIInferenceModule（LM Studio / Ollama / OpenAI）
+    │   │   ├── pyproject.toml
+    │   │   └── src/main.py
+    │   └── claude/             # ClaudeInferenceModule
+    │       ├── pyproject.toml
+    │       └── src/main.py
+    └── actions/                # ActionModule 実装群
+        └── servo/              # FeetechServoActionModule
+            ├── pyproject.toml
+            └── src/main.py
 ```
 
-各モジュールは独立した uv プロジェクトとし、`platform/` を path dependency として参照する。
+各モジュールは独立した uv プロジェクトとし、`platform/schemas/` を path dependency として参照する。
 
 ---
 
