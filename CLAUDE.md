@@ -3,6 +3,7 @@
 @.claude/rules/firmware.md
 @.claude/rules/coding_style.md
 @.claude/rules/git.md
+@.claude/rules/docs_style.md
 
 
 ## ファイル保存先
@@ -27,7 +28,13 @@ ai_robotics/
 │   ├── m5stack_core2/  # M5Stack Core2 向け PlatformIO プロジェクト
 │   └── m5stack_core_s3/ # M5Stack CoreS3 向け PlatformIO プロジェクト
 │       └── examples/    # サンプルコード
-├── local_pc/           # PC 側で動かす Python スクリプト
+├── local_pc/           # PC 側で動かす Python スクリプト・モジュール群
+│   └── platform/       # プラットフォーム本体
+│       ├── schemas/    # 共有スキーマパッケージ（全モジュールの path dependency）
+│       ├── pilots/     # Pilot 実装群（例: wonder_eye/, voice_chat/）
+│       ├── sensors/    # SensorModule 実装群（例: camera_m5stack/, camera_usb/）
+│       ├── inference/  # InferenceModule 実装群（例: openai_compat/, claude/）
+│       └── actions/    # ActionModule 実装群（例: servo_feetech/, servo_dynamixel/）
 ├── docs/               # プロジェクトドキュメント
 │   ├── architecture/   # アーキテクチャ設計
 │   ├── firmware/       # ファームウェア開発ドキュメント
