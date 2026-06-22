@@ -51,13 +51,11 @@ local_pc/
     │       ├── pyproject.toml
     │       └── src/main.py
     ├── sensors/                    # SensorModule 実装群
-    │   ├── camera/
-    │   │   ├── m5stack/            # M5StackCameraSensorModule
-    │   │   │   ├── pyproject.toml
-    │   │   │   └── src/main.py
-    │   │   └── usb/                # USBCameraSensorModule（将来）
-    │   └── mic/                    # MicSensorModule（将来）
-    │       └── usb/
+    │   ├── camera_m5stack/         # M5StackCameraSensorModule
+    │   │   ├── pyproject.toml
+    │   │   └── src/main.py
+    │   ├── camera_usb/             # USBCameraSensorModule（将来）
+    │   └── mic_usb/                # MicSensorModule（将来）
     ├── inference/                  # InferenceModule 実装群
     │   ├── openai_compat/          # OpenAIInferenceModule（LM Studio / Ollama / OpenAI）
     │   │   ├── pyproject.toml
@@ -66,11 +64,10 @@ local_pc/
     │       ├── pyproject.toml
     │       └── src/main.py
     └── actions/                    # ActionModule 実装群
-        ├── servo/
-        │   ├── feetech/            # FeetechServoActionModule
-        │   │   ├── pyproject.toml
-        │   │   └── src/main.py
-        │   └── dynamixel/          # DynamixelServoActionModule（将来）
+        ├── servo_feetech/          # FeetechServoActionModule
+        │   ├── pyproject.toml
+        │   └── src/main.py
+        ├── servo_dynamixel/        # DynamixelServoActionModule（将来）
         └── arm/                    # ArmActionModule（将来）
 ```
 

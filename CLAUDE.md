@@ -32,9 +32,9 @@ ai_robotics/
 │   └── platform/       # プラットフォーム本体
 │       ├── schemas/    # 共有スキーマパッケージ（全モジュールの path dependency）
 │       ├── pilots/     # Pilot 実装群（例: wonder_eye/, voice_chat/）
-│       ├── sensors/    # SensorModule 実装群（例: camera/m5stack/, camera/usb/）
+│       ├── sensors/    # SensorModule 実装群（例: camera_m5stack/, camera_usb/）
 │       ├── inference/  # InferenceModule 実装群（例: openai_compat/, claude/）
-│       └── actions/    # ActionModule 実装群（例: servo/feetech/, servo/dynamixel/）
+│       └── actions/    # ActionModule 実装群（例: servo_feetech/, servo_dynamixel/）
 ├── docs/               # プロジェクトドキュメント
 │   ├── architecture/   # アーキテクチャ設計
 │   ├── firmware/       # ファームウェア開発ドキュメント
