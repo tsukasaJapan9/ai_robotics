@@ -13,14 +13,12 @@ cp .claude/scripts/pre-commit-check.sh .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
 ```
 
-## PR 作成
+## PR 作成・更新
 
-PR の作成・更新には `gh` コマンドを使う。タイトルはコンベンショナルコミット形式にする。
+push 後は必ず PR のタイトルと概要を適切に設定すること。
 
-```bash
-gh pr create --title "feat: ..." --body "..."
-gh pr edit <number> --title "..." --body "..."
-```
+- タイトルはコンベンショナルコミット形式（`feat:` / `fix:` / `docs:` など）
+- 概要にはブランチ全体の変更内容・設計決定のサマリを記載する
 
 ## ブランチ作成前
 
