@@ -31,7 +31,7 @@ ai_robotics/
 ├── local_pc/           # PC 側で動かす Python スクリプト・モジュール群
 │   └── platform/       # プラットフォーム本体
 │       ├── schemas/    # 共有スキーマパッケージ（全モジュールの path dependency）
-│       ├── orchestrator/ # Orchestrator（サービスディスカバリ・ワイヤリング）
+│       ├── pilot/ # Orchestrator（サービスディスカバリ・ワイヤリング）
 │       ├── sensors/    # SensorModule 実装群（例: camera/）
 │       ├── inference/  # InferenceModule 実装群（例: openai_compat/, claude/）
 │       └── actions/    # ActionModule 実装群（例: servo/）

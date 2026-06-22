@@ -40,7 +40,7 @@ local_pc/
     │   ├── pyproject.toml
     │   └── src/schemas/
     │       └── schemas.py
-    ├── orchestrator/           # Orchestrator
+    ├── pilot/           # Pilot
     │   ├── pyproject.toml
     │   └── src/
     │       ├── main.py
@@ -101,7 +101,7 @@ local_pc/platform/src/platform/
 
 | 番台 | 用途 | 例 |
 |---|---|---|
-| 8000 | Orchestrator | 8000 |
+| 8000 | Pilot | 8000 |
 | 8100〜 | SensorModule | CameraSensorModule: 8101、MicSensorModule: 8102 |
 | 8200〜 | InferenceModule | OpenAIInferenceModule: 8201 |
 | 8300〜 | ActionModule | ServoActionModule: 8301 |
@@ -180,8 +180,8 @@ Content-Type はモジュールごとに異なる:
 ## InferenceModule
 
 プロンプトとスキーマを受け取り、LLM を呼び出して構造化データを返すモジュール。
-ステートレス。履歴・コンテキスト管理は Orchestrator が担う。
-Orchestrator は LLM バックエンドの種類を意識しない。
+ステートレス。履歴・コンテキスト管理は Pilot が担う。
+Pilot は LLM バックエンドの種類を意識しない。
 
 ### バックエンド抽象化
 
@@ -220,7 +220,7 @@ Claude のみ別アダプタが必要。
 ```
 
 - `schema`: 出力に期待する JSON Schema。LLM の structured output 機能に渡す
-- `data`: 任意。Orchestrator が SensorModule からデータを取得し base64 エンコードして渡す
+- `data`: 任意。Pilot が SensorModule からデータを取得し base64 エンコードして渡す
   - `type`: `image` / `audio` / `text`
   - `content`: base64 エンコードされたバイナリ、またはテキスト
   - `media_type`: MIME タイプ（例: `image/jpeg`, `audio/wav`）
@@ -307,11 +307,11 @@ Stack-chan のサーボ制御モジュール。
 
 ---
 
-## Orchestrator
+## Pilot
 
 ### サービスディスカバリ
 
-Orchestrator 起動時にポート番号ルールに基づいてスキャンし、応答したモジュールを自動登録する。追加インフラ不要。
+Pilot 起動時にポート番号ルールに基づいてスキャンし、応答したモジュールを自動登録する。追加インフラ不要。
 
 ```
 起動
@@ -331,15 +331,15 @@ media_type で互換性を確認してワイヤリングを決定
 
 ## モジュール間ワイヤリング
 
-すべてのモジュール間通信は Orchestrator を介して行う。モジュール同士が直接通信することはない。
+すべてのモジュール間通信は Pilot を介して行う。モジュール同士が直接通信することはない。
 
 ```
-SensorModule ──→ Orchestrator ──→ InferenceModule
+SensorModule ──→ Pilot ──→ InferenceModule
                      │
                      └──────────→ ActionModule
 ```
 
-Orchestrator の責務:
+Pilot の責務:
 - 各モジュールの `/health` を確認し、`media_type` で互換性を検証する
 - SensorModule から `/snapshot` でデータを取得し、base64 エンコードして InferenceModule に渡す
 - InferenceModule の推論結果を受け取り、ActionModule に `/action` を発行する
@@ -347,23 +347,23 @@ Orchestrator の責務:
 
 **ファンアウト（複数コンシューマ）**
 
-Viewer など読み取り専用クライアントは、SensorModule の `/stream` に直接接続してよい（Orchestrator を介さない唯一の例外）。
+Viewer など読み取り専用クライアントは、SensorModule の `/stream` に直接接続してよい（Pilot を介さない唯一の例外）。
 
 ```
 CameraSensorModule :8101
   ├── /stream ← Viewer が直接接続（読み取り専用）
-  └── /snapshot ← Orchestrator が取得
+  └── /snapshot ← Pilot が取得
 ```
 
 **視線制御構成（現在）**
 ```
 CameraSensorModule :8101
     ↓ /snapshot
-Orchestrator       :8000
+Pilot       :8000
     ↓ POST /infer (base64)
 InferenceModule    :8201
     ↓ result
-Orchestrator       :8000
+Pilot       :8000
     ↓ POST /action
 ServoActionModule  :8301
 ```
@@ -372,11 +372,11 @@ ServoActionModule  :8301
 ```
 MicSensorModule    :8102
     ↓ /snapshot
-Orchestrator       :8000
+Pilot       :8000
     ↓ POST /infer (base64)
 InferenceModule    :8201
     ↓ result
-Orchestrator       :8000
+Pilot       :8000
     ↓ POST /action
 ActionModule       :8301
 ```
