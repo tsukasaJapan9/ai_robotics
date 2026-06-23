@@ -19,7 +19,7 @@ struct Config {
     String geminiApiKey;
 };
 
-static WebServer server(80);
+static WebServer server(8101);
 static bool cameraReady = false;
 
 static String yamlValue(const String& line) {
