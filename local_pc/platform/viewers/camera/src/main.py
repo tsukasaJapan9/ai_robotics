@@ -8,7 +8,7 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from schemas import setup_logging
+from utils import setup_logging
 
 setup_logging()
 logger = logging.getLogger(__name__)

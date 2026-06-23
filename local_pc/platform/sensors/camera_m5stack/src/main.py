@@ -12,7 +12,8 @@ import requests
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response, StreamingResponse
-from schemas import HealthResponse, setup_logging
+from schemas import HealthResponse
+from utils import setup_logging
 
 setup_logging()
 logger = logging.getLogger(__name__)

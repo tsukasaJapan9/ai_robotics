@@ -10,7 +10,8 @@ import requests
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from schemas import ActionRequest, ActionResponse, HealthResponse, setup_logging
+from schemas import ActionRequest, ActionResponse, HealthResponse
+from utils import setup_logging
 
 setup_logging()
 logger = logging.getLogger(__name__)

@@ -5,8 +5,8 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.100",
     "uvicorn>=0.20",
-    "platform-schemas",
+    "platform-utils",
 ]
 
 [tool.uv.sources]
-platform-schemas = { path = "../../schemas", editable = true }
+platform-utils = { path = "../../utils", editable = true }
