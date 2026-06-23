@@ -8,8 +8,9 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from schemas import setup_logging
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+setup_logging()
 logger = logging.getLogger(__name__)
 
 app = FastAPI()

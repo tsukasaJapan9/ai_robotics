@@ -12,9 +12,9 @@ import requests
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response, StreamingResponse
-from schemas import HealthResponse
+from schemas import HealthResponse, setup_logging
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+setup_logging()
 logger = logging.getLogger(__name__)
 
 MODULE_NAME = "camera_m5stack"

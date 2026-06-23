@@ -10,9 +10,9 @@ import requests
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from schemas import ActionRequest, ActionResponse, HealthResponse
+from schemas import ActionRequest, ActionResponse, HealthResponse, setup_logging
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+setup_logging()
 logger = logging.getLogger(__name__)
 
 MODULE_NAME = "stackchan_servo"
