@@ -7,6 +7,24 @@ class HealthResponse(BaseModel):
     media_type: str | None = None
 
 
+class InferData(BaseModel):
+    type: str  # "image" | "audio" | "text"
+    content: str  # base64 encoded or plain text
+    media_type: str  # e.g. "image/jpeg"
+
+
+class InferRequest(BaseModel):
+    prompt: str
+    schema: dict
+    data: InferData | None = None
+
+
+class InferResponse(BaseModel):
+    result: dict
+    model: str
+    timestamp: str
+
+
 class ActionRequest(BaseModel):
     type: str
     params: dict = {}
