@@ -4,9 +4,13 @@ CameraSensorModule の /stream を表示するブラウザビューア。
 Port: 8080
 """
 import argparse
+import logging
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 _stream_url = ""
@@ -39,9 +43,9 @@ def main():
     args = parser.parse_args()
 
     _stream_url = args.stream_url
-    print(f"Stream: {_stream_url}")
-    print(f"Port:   {args.port}")
-    print(f"Open:   http://localhost:{args.port}")
+    logger.info(f"Stream: {_stream_url}")
+    logger.info(f"Port:   {args.port}")
+    logger.info(f"Open:   http://localhost:{args.port}")
 
     uvicorn.run(app, host="0.0.0.0", port=args.port)
 

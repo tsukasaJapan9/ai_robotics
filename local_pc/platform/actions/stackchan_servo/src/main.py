@@ -5,11 +5,15 @@ Stack-chan ファームウェアの HTTP API (/servo, /center) にリクエス�
 Port: 8301
 """
 import argparse
+import logging
 import requests
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from schemas import ActionRequest, ActionResponse, HealthResponse
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
 
 MODULE_NAME = "stackchan_servo"
 
@@ -71,8 +75,8 @@ def main():
     args = parser.parse_args()
 
     _servo_url = args.servo_url.rstrip("/")
-    print(f"Servo URL: {_servo_url}")
-    print(f"Port:      {args.port}")
+    logger.info(f"Servo URL: {_servo_url}")
+    logger.info(f"Port:      {args.port}")
 
     uvicorn.run(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
 
