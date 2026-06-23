@@ -12,6 +12,16 @@ uv run <cmd>   # スクリプト実行
 
 Web API を作る場合は FastAPI を使うこと。
 
+ログ出力には `print` を使わず `logging` を使うこと。
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+logger.info("...")
+logger.warning("...")
+```
+
 ## 共通
 
 ソースコードを作成・修正する場合は以下を守ること。
