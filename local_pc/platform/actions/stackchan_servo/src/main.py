@@ -23,14 +23,24 @@ async def health():
     return HealthResponse(status="ok", module=MODULE_NAME)
 
 
+X_MIN, X_MAX = 0, 360
+Y_MIN, Y_MAX = 50, 85
+
+
 @app.post("/action", response_model=ActionResponse)
 async def action(body: ActionRequest):
     if body.type == "move":
         params: dict[str, int] = {}
-        if body.params.get("x") is not None:
-            params["x"] = body.params["x"]
-        if body.params.get("y") is not None:
-            params["y"] = body.params["y"]
+        x = body.params.get("x")
+        y = body.params.get("y")
+        if x is not None:
+            if not (X_MIN <= x <= X_MAX):
+                return JSONResponse(status_code=400, content={"error": f"x out of range: {x} (valid: {X_MIN}-{X_MAX})"})
+            params["x"] = x
+        if y is not None:
+            if not (Y_MIN <= y <= Y_MAX):
+                return JSONResponse(status_code=400, content={"error": f"y out of range: {y} (valid: {Y_MIN}-{Y_MAX})"})
+            params["y"] = y
         if not params:
             return ActionResponse(ok=True)
         try:
