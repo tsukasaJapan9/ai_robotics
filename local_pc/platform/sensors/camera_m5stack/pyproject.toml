@@ -7,7 +7,9 @@ dependencies = [
     "uvicorn>=0.20",
     "requests>=2.30",
     "platform-schemas",
+    "platform-utils",
 ]
 
 [tool.uv.sources]
 platform-schemas = { path = "../../schemas", editable = true }
+platform-utils = { path = "../../utils", editable = true }

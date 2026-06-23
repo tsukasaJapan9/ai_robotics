@@ -5,6 +5,7 @@ Port: 8101
 """
 import argparse
 import asyncio
+import logging
 import threading
 import time
 import requests
@@ -12,6 +13,10 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import Response, StreamingResponse
 from schemas import HealthResponse
+from utils import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 MODULE_NAME = "camera_m5stack"
 BOUNDARY = b"--frame"
@@ -51,7 +56,7 @@ def _read_stream(stream_url: str):
                         buf = buf[frame_start + content_length:]
                         latest_frame = frame
         except Exception as e:
-            print(f"Stream error: {e}, reconnecting in 2s...")
+            logger.warning(f"Stream error: {e}, reconnecting in 2s...")
             time.sleep(2)
 
 
@@ -93,8 +98,8 @@ def main():
     parser.add_argument("--port", type=int, default=8101)
     args = parser.parse_args()
 
-    print(f"Stream: {args.stream_url}")
-    print(f"Port:   {args.port}")
+    logger.info(f"Stream: {args.stream_url}")
+    logger.info(f"Port:   {args.port}")
 
     threading.Thread(target=_read_stream, args=(args.stream_url,), daemon=True).start()
     uvicorn.run(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
