@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from schemas import ActionRequest, ActionResponse, HealthResponse
 
-MODULE_NAME = "servo_stackchan"
+MODULE_NAME = "stackchan_servo"
 
 _servo_url = ""
 
