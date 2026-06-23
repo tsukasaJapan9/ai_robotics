@@ -97,7 +97,7 @@ def main():
     print(f"Port:   {args.port}")
 
     threading.Thread(target=_read_stream, args=(args.stream_url,), daemon=True).start()
-    uvicorn.run(app, host="0.0.0.0", port=args.port)
+    uvicorn.run(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
 
 
 if __name__ == "__main__":
