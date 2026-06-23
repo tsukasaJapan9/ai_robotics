@@ -89,7 +89,7 @@ async def snapshot():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--stream-url", default="http://192.168.0.9/stream")
+    parser.add_argument("--stream-url", default="http://192.168.0.9:8101/stream")
     parser.add_argument("--port", type=int, default=8101)
     args = parser.parse_args()
 
