@@ -94,14 +94,14 @@ async def snapshot():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--stream-url", default="http://192.168.0.9:8101/stream")
+    parser.add_argument("--url", default="http://192.168.0.9:8101/stream")
     parser.add_argument("--port", type=int, default=8101)
     args = parser.parse_args()
 
-    logger.info(f"Stream: {args.stream_url}")
+    logger.info(f"Stream: {args.url}")
     logger.info(f"Port:   {args.port}")
 
-    threading.Thread(target=_read_stream, args=(args.stream_url,), daemon=True).start()
+    threading.Thread(target=_read_stream, args=(args.url,), daemon=True).start()
     uvicorn.run(app, host="0.0.0.0", port=args.port, timeout_graceful_shutdown=0)
 
 

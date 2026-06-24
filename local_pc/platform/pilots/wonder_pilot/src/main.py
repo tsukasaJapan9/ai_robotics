@@ -100,7 +100,7 @@ def _pilot_loop():
         # 推論
         req = InferRequest(
             prompt=_build_prompt(),
-            schema=INFER_SCHEMA,
+            json_schema=INFER_SCHEMA,
             data=InferData(
                 type="image",
                 content=base64.b64encode(frame).decode(),

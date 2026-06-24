@@ -18,6 +18,11 @@ PATTERNS=(
 # このスクリプト自身はチェック対象から除外
 EXCLUDE_FILES=(".claude/scripts/pre-commit-check.sh")
 
+# ダミー値として許可するパターン（誤検知除外）
+DUMMY_PATTERNS=(
+    'api[_-]?key\s*[:=]\s*["'"'"']dummy["'"'"']'
+)
+
 found=0
 
 while IFS= read -r file; do
@@ -36,6 +41,9 @@ while IFS= read -r file; do
     for pat in "${PATTERNS[@]}"; do
         # コメント行（// # * <!--）は除外
         result=$(git show ":$file" | grep -iP -e "$pat" | grep -vP '^\s*(//|#|\*|<!--)' 2>/dev/null || true)
+        for dummy_pat in "${DUMMY_PATTERNS[@]}"; do
+            result=$(echo "$result" | grep -viP "$dummy_pat" || true)
+        done
         if [ -n "$result" ]; then
             echo "[secrets] $file:"
             echo "$result" | head -3

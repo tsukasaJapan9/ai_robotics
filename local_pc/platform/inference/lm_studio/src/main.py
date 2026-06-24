@@ -58,7 +58,7 @@ async def infer(body: InferRequest):
                 "type": "json_schema",
                 "json_schema": {
                     "name": "result",
-                    "schema": body.schema,
+                    "schema": body.json_schema,
                     "strict": True,
                 },
             },
@@ -84,15 +84,15 @@ async def infer(body: InferRequest):
 def main():
     global _client, _model
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default="http://localhost:1234/v1")
+    parser.add_argument("--url", default="http://localhost:1234/v1")
     parser.add_argument("--model", default="gemma4:e4b")
     parser.add_argument("--port", type=int, default=8201)
     args = parser.parse_args()
 
-    _client = OpenAI(base_url=args.base_url, api_key="lm-studio")
+    _client = OpenAI(base_url=args.url, api_key="dummy")
     _model = args.model
 
-    logger.info(f"Base URL: {args.base_url}")
+    logger.info(f"Base URL: {args.url}")
     logger.info(f"Model:    {_model}")
     logger.info(f"Port:     {args.port}")
 
