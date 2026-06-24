@@ -89,10 +89,11 @@ def main():
     parser.add_argument("--port", type=int, default=8201)
     args = parser.parse_args()
 
-    _client = OpenAI(base_url=args.url, api_key="dummy")
+    url = args.url if args.url.startswith("http") else f"http://{args.url}"
+    _client = OpenAI(base_url=url, api_key="dummy")
     _model = args.model
 
-    logger.info(f"Base URL: {args.url}")
+    logger.info(f"Base URL: {url}")
     logger.info(f"Model:    {_model}")
     logger.info(f"Port:     {args.port}")
 

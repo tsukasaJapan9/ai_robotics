@@ -75,7 +75,8 @@ def main():
     parser.add_argument("--port", type=int, default=8301)
     args = parser.parse_args()
 
-    _servo_url = args.url.rstrip("/")
+    url = args.url if args.url.startswith("http") else f"http://{args.url}"
+    _servo_url = url.rstrip("/")
     logger.info(f"Servo URL: {_servo_url}")
     logger.info(f"Port:      {args.port}")
 

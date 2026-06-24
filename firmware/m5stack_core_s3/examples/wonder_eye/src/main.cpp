@@ -8,7 +8,7 @@
 // サーボ: SCS0009（Feetech シリアルバスサーボ）
 //   UART Serial2: RX=GPIO7, TX=GPIO6, 1Mbps、M5IOE1（I2C 0x6F）経由
 //   X軸（水平）: 0〜360度、中央 160度
-//   Y軸（垂直）: 5〜85度、中央 45度（限界角度でロックする恐れがあるため制限）
+//   Y軸（垂直）: 5〜85度、中央 60度（限界角度でロックする恐れがあるため制限）
 //
 // WiFi 設定: SD カード /config.yaml
 //   wifi:
@@ -31,7 +31,7 @@
 
 static const int SD_CS_PIN = 4;
 static const int X_CENTER  = 160;
-static const int Y_CENTER  = 45;
+static const int Y_CENTER  = 60;
 static const int X_MIN     = 0;
 static const int X_MAX     = 360;
 static const int Y_MIN     = 5;
