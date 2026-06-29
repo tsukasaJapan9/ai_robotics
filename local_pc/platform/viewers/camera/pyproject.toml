@@ -6,6 +6,7 @@ dependencies = [
     "fastapi>=0.100",
     "uvicorn>=0.20",
     "platform-utils",
+    "httpx>=0.28.1",
 ]
 
 [tool.uv.sources]

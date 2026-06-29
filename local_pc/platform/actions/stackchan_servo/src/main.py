@@ -71,11 +71,12 @@ async def action_reset():
 def main():
     global _servo_url
     parser = argparse.ArgumentParser()
-    parser.add_argument("--servo-url", default="http://192.168.0.10")
+    parser.add_argument("--url", default="http://192.168.0.10")
     parser.add_argument("--port", type=int, default=8301)
     args = parser.parse_args()
 
-    _servo_url = args.servo_url.rstrip("/")
+    url = args.url if args.url.startswith("http") else f"http://{args.url}"
+    _servo_url = url.rstrip("/")
     logger.info(f"Servo URL: {_servo_url}")
     logger.info(f"Port:      {args.port}")
 

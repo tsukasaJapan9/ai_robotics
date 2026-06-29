@@ -1,5 +1,7 @@
 # ai_robotics
 
+応答は日本語で行うこと。
+
 @.claude/rules/firmware.md
 @.claude/rules/coding_style.md
 @.claude/rules/git.md

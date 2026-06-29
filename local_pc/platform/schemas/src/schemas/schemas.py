@@ -15,7 +15,7 @@ class InferData(BaseModel):
 
 class InferRequest(BaseModel):
     prompt: str
-    schema: dict
+    json_schema: dict
     data: InferData | None = None
 
 
